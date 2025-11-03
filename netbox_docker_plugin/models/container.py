@@ -93,6 +93,20 @@ class ContainerCapAddChoices(ChoiceSet):
 
     CHOICES = [
         ("NET_ADMIN", "NET_ADMIN"),
+        ("CHOWN", "CHOWN"),
+        ("DAC_OVERRIDE", "DAC_OVERRIDE"),
+        ("DAC_READ_SEARCH", "DAC_READ_SEARCH"),
+        ("FOWNER", "FOWNER"),
+        ("FSETID", "FSETID"),
+        ("KILL", "KILL"),
+        ("NET_RAW", "NET_RAW"),
+        ("SETFCAP", "SETFCAP"),
+        ("SETGID", "SETGID"),
+        ("SETUID", "SETUID"),
+        ("SYS_ADMIN", "SYS_ADMIN"),
+        ("SYS_CHROOT", "SYS_CHROOT"),
+        ("SYS_PTRACE", "SYS_PTRACE"),
+        ("SYS_RESOURCE", "SYS_RESOURCE"),
     ]
 
 
