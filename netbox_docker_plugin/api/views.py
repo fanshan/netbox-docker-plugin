@@ -47,13 +47,19 @@ class HostViewSet(NetBoxModelViewSet):
     def perform_create(self, serializer):
         if isinstance(serializer.validated_data, Sequence):
             for obj in serializer.validated_data:
-                token = Token(user=self.request.user, write_enabled=True, description="DockerAgent")
+                token = Token(
+                    user=self.request.user,
+                    write_enabled=True,
+                    description="DockerAgent",
+                )
                 token.save()
 
                 obj["token"] = token
                 obj["netbox_base_url"] = self.request.stream.META["HTTP_ORIGIN"]
         else:
-            token = Token(user=self.request.user, write_enabled=True, description="DockerAgent")
+            token = Token(
+                user=self.request.user, write_enabled=True, description="DockerAgent"
+            )
             token.save()
 
             serializer.validated_data["token"] = token
@@ -85,7 +91,7 @@ class ImageViewSet(NetBoxModelViewSet):
         renderer_classes=[JSONRenderer],
     )
     def force_pull(self, _request, **_kwargs):
-        """ Force pull an existing image """
+        """Force pull an existing image"""
 
         image: Image = self.get_object()
         agent_url = image.host.endpoint
@@ -146,6 +152,7 @@ class ContainerViewSet(NetBoxModelViewSet):
         "ports",
         "labels",
         "log_driver_options",
+        "sysctls",
         "tags",
     )
     filterset_class = filtersets.ContainerFilterSet

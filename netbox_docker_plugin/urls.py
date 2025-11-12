@@ -22,14 +22,19 @@ from .views import (
     network_setting as network_setting_views,
     registry as registry_views,
     device as device_views,
-    log_driver_option as log_driver_option_views
+    log_driver_option as log_driver_option_views,
+    sysctl as sysctl_views,
 )
 
 urlpatterns = (
     # Host
     path("hosts/", host_views.HostListView.as_view(), name="host_list"),
     path("hosts/add/", host_views.HostEditView.as_view(), name="host_add"),
-    path("hosts/import/", host_views.HostBulkImportView.as_view(), name="host_bulk_import"),
+    path(
+        "hosts/import/",
+        host_views.HostBulkImportView.as_view(),
+        name="host_bulk_import",
+    ),
     path("hosts/edit/", host_views.HostBulkEditView.as_view(), name="host_bulk_edit"),
     path(
         "hosts/delete/",
@@ -69,7 +74,9 @@ urlpatterns = (
     path("images/", image_views.ImageListView.as_view(), name="image_list"),
     path("images/add/", image_views.ImageEditView.as_view(), name="image_add"),
     path(
-        "images/import/", image_views.ImageBulkImportView.as_view(), name="image_bulk_import"
+        "images/import/",
+        image_views.ImageBulkImportView.as_view(),
+        name="image_bulk_import",
     ),
     path(
         "images/edit/", image_views.ImageBulkEditView.as_view(), name="image_bulk_edit"
@@ -453,5 +460,26 @@ urlpatterns = (
         "devices/<int:pk>/delete/",
         device_views.DeviceDeleteView.as_view(),
         name="device_delete",
+    ),
+    # Sysctl
+    path(
+        "sysctls/",
+        sysctl_views.SysctlListView.as_view(),
+        name="sysctl_list",
+    ),
+    path(
+        "sysctls/add/",
+        sysctl_views.SysctlEditView.as_view(),
+        name="sysctl_add",
+    ),
+    path(
+        "sysctls/<int:pk>/edit/",
+        sysctl_views.SysctlEditView.as_view(),
+        name="sysctl_edit",
+    ),
+    path(
+        "sysctls/<int:pk>/delete/",
+        sysctl_views.SysctlDeleteView.as_view(),
+        name="sysctl_delete",
     ),
 )

@@ -16,6 +16,7 @@ from .models.container import (
     NetworkSetting,
     Device,
     LogDriverOption,
+    Sysctl,
 )
 from .models.registry import Registry
 from .templatetags.host import remove_password
@@ -461,3 +462,18 @@ class DeviceTable(NetBoxTable):
             "host_path",
             "container_path",
         )
+
+
+class SysctlTable(NetBoxTable):
+    """Sysctl Table definition class"""
+
+    container = tables.Column(linkify=True)
+
+    actions = columns.ActionsColumn(actions=("edit", "delete"))
+
+    class Meta(NetBoxTable.Meta):
+        """Sysctl Table definition Meta class"""
+
+        model = Sysctl
+        fields = ("container", "key", "value")
+        default_columns = ("container", "key", "value")
