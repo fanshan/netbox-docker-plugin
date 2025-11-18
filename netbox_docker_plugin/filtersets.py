@@ -17,6 +17,7 @@ from .models.container import (
     NetworkSetting,
     Device,
     LogDriverOption,
+    Sysctl,
 )
 from .models.registry import Registry
 
@@ -340,3 +341,22 @@ class DeviceFilterSet(BaseFilterSet):
 
         model = Device
         fields = ("id",)
+
+
+class SysctlFilterSet(BaseFilterSet):
+    """Sysctl filterset definition class"""
+
+    container_id = ModelMultipleChoiceFilter(
+        field_name="container_id",
+        queryset=Container.objects.all(),
+        label="Container (ID)",
+    )
+
+    class Meta:
+        """Sysctl filterset definition meta class"""
+
+        model = Sysctl
+        fields = (
+            "id",
+            "key",
+        )

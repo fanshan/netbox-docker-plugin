@@ -21,8 +21,8 @@ class NetworkViewsTestCase(
 
         network1 = Network.objects.create(name="network1", host=host1)
         network2 = Network.objects.create(name="network2", host=host2, driver="bridge")
-        network3 = Network.objects.create(name="network3", host=host3, driver="host")
-        network4 = Network.objects.create(name="network4", host=host3, driver=None)
+        network3 = Network.objects.create(name="network3", host=host3, driver=None)
+        network4 = Network.objects.create(name="network4", host=host3, driver="host")
 
         cls.form_data = {
             "name": "image5",

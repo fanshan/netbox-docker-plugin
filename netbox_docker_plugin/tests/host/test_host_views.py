@@ -65,6 +65,27 @@ class HostViewsTestCase(BaseModelViewTestCase, ViewTestCases.PrimaryObjectViewTe
             objectchanges[1].action, ObjectChangeActionChoices.ACTION_UPDATE
         )
 
+    def test_bulk_delete_objects_with_permission(self):
+        pk_list = list(self._get_queryset().values_list("pk", flat=True))[:3]
+        data = {
+            "pk": pk_list,
+            "confirm": True,
+            "_confirm": True,  # Form button
+        }
+
+        # Assign unconstrained permission
+        obj_perm = ObjectPermission(name="Test permission", actions=["delete"])
+        obj_perm.save()
+        # pylint: disable=E1101
+        obj_perm.users.add(self.user)
+        # pylint: disable=E1101
+        obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
+
+        # Try POST with model-level permission
+        response = self.client.post(self._get_url("bulk_delete"), data)
+        self.assertHttpStatus(response, 302)
+        self.assertFalse(self._get_queryset().filter(pk__in=pk_list).exists())
+
     @classmethod
     def setUpTestData(cls):
         host1 = Host.objects.create(endpoint="http://localhost:8080", name="host1")

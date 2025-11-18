@@ -51,6 +51,7 @@ class ContainerApiTestCase(
         "network_settings",
         "devices",
         "log_driver_options",
+        "sysctls",
     ]
 
     @classmethod
@@ -96,7 +97,7 @@ class ContainerApiTestCase(
             name="container3",
             operation="none",
             state="created",
-            cmd=["ls", "-al"]
+            cmd=["ls", "-al"],
         )
 
         cls.create_data = [
@@ -135,6 +136,10 @@ class ContainerApiTestCase(
                 "log_driver_options": [
                     {"option_name": "syslog-address", "value": "udp://127.0.0.1:514"},
                 ],
+                "sysctls": [
+                    {"key": "net.ipv4.ip_forward", "value": "1"},
+                    {"key": "kernel.panic", "value": "5"},
+                ],
             },
             {
                 "host": host2.pk,
@@ -159,6 +164,7 @@ class ContainerApiTestCase(
                 "ports": [],
                 "env": [],
                 "labels": [],
+                "sysctls": [],
                 "mounts": [
                     {"source": "/data", "volume": volume3.pk},
                     {"source": "/etc", "volume": volume3.pk},
@@ -172,6 +178,7 @@ class ContainerApiTestCase(
                 "ports": [],
                 "env": [],
                 "labels": [],
+                "sysctls": [],
                 "mounts": [
                     {"source": "/data", "volume": volume3.pk},
                     {"source": "/etc", "volume": volume3.pk},
@@ -184,8 +191,9 @@ class ContainerApiTestCase(
                 "ports": [],
                 "env": [{"var_name": "ENV", "value": ""}],
                 "labels": [],
+                "sysctls": [],
                 "cap_add": ["NET_ADMIN"],
-                "cmd": ["cat", "/etc/hosts"]
+                "cmd": ["cat", "/etc/hosts"],
             },
         ]
 

@@ -20,6 +20,7 @@ from ..models.container import (
     NetworkSetting,
     Device,
     LogDriverOption,
+    Sysctl,
 )
 from ..models.registry import Registry
 
@@ -422,6 +423,19 @@ class DeviceSerializer(serializers.ModelSerializer):
         )
 
 
+class SysctlSerializer(serializers.ModelSerializer):
+    """Container sysctl Serializer class"""
+
+    class Meta:
+        """Container sysctl Serializer Meta class"""
+
+        model = Sysctl
+        fields = (
+            "key",
+            "value",
+        )
+
+
 class ContainerSerializer(NetBoxModelSerializer):
     """Container Serializer class"""
 
@@ -438,6 +452,7 @@ class ContainerSerializer(NetBoxModelSerializer):
     network_settings = NetworkSettingSerializer(many=True, required=False)
     devices = DeviceSerializer(many=True, required=False)
     log_driver_options = LogDriverOptionSerializer(many=True, required=False)
+    sysctls = SysctlSerializer(many=True, required=False)
 
     class Meta:
         """Container Serializer Meta class"""
@@ -467,6 +482,7 @@ class ContainerSerializer(NetBoxModelSerializer):
             "devices",
             "log_driver",
             "log_driver_options",
+            "sysctls",
             "custom_fields",
             "created",
             "last_updated",
@@ -484,6 +500,7 @@ class ContainerSerializer(NetBoxModelSerializer):
         attrs.pop("binds", None)
         attrs.pop("network_settings", None)
         attrs.pop("devices", None)
+        attrs.pop("sysctls", None)
 
         super().validate(attrs)
 
@@ -499,6 +516,7 @@ class ContainerSerializer(NetBoxModelSerializer):
         binds_data = validated_data.pop("binds", None)
         network_settings_data = validated_data.pop("network_settings", None)
         devices_data = validated_data.pop("devices", None)
+        sysctls_data = validated_data.pop("sysctls", None)
 
         container = super().create(validated_data)
 
@@ -542,6 +560,10 @@ class ContainerSerializer(NetBoxModelSerializer):
                 obj.full_clean()
                 obj.save()
 
+        if sysctls_data is not None:
+            for sysctl in sysctls_data:
+                Sysctl.objects.create(container=container, **sysctl)
+
         return container
 
     # pylint: disable=R0912
@@ -554,6 +576,7 @@ class ContainerSerializer(NetBoxModelSerializer):
         binds_data = validated_data.pop("binds", None)
         network_settings_data = validated_data.pop("network_settings", None)
         devices_data = validated_data.pop("devices", None)
+        sysctls_data = validated_data.pop("sysctls", None)
 
         container = super().update(instance, validated_data)
 
@@ -604,6 +627,11 @@ class ContainerSerializer(NetBoxModelSerializer):
                 obj = Device(container=container, **device)
                 obj.full_clean()
                 obj.save()
+
+        if sysctls_data is not None:
+            Sysctl.objects.filter(container=container).delete()
+            for sysctl in sysctls_data:
+                Sysctl.objects.create(container=container, **sysctl)
 
         return container
 

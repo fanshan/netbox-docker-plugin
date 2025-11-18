@@ -123,6 +123,35 @@ class HostApiTestCase(
             objectchanges[1].action, ObjectChangeActionChoices.ACTION_UPDATE
         )
 
+    def test_bulk_delete_objects(self):
+        """
+        DELETE a set of objects in a single request.
+        """
+        # Add object-level permission
+        obj_perm = ObjectPermission(name="Test permission", actions=["delete"])
+        obj_perm.save()
+        # pylint: disable=E1101
+        obj_perm.users.add(self.user)
+        # pylint: disable=E1101
+        obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
+
+        # Target the three most recently created objects to avoid triggering recursive deletions
+        # (e.g. with MPTT objects)
+        id_list = list(
+            self._get_queryset().order_by("-id").values_list("id", flat=True)[:3]
+        )
+        self.assertEqual(
+            len(id_list), 3, "Insufficient number of objects to test bulk deletion"
+        )
+        data = [{"id": id} for id in id_list]
+
+        initial_count = self._get_queryset().count()
+        response = self.client.delete(
+            self._get_list_url(), data, format="json", **self.header
+        )
+        self.assertHttpStatus(response, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(self._get_queryset().count(), initial_count - 3)
+
     @classmethod
     def setUpTestData(cls) -> None:
         Host.objects.create(endpoint="http://localhost:8080", name="host1")

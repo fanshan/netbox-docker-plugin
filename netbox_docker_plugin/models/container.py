@@ -175,9 +175,7 @@ class Container(NetBoxModel):
         blank=True,
     )
     cmd = ArrayField(
-        models.CharField(
-            max_length=1024, blank=True, null=True
-        ),
+        models.CharField(max_length=1024, blank=True, null=True),
         null=True,
         blank=True,
     )
@@ -585,3 +583,42 @@ class Device(models.Model):
 
     def __str__(self):
         return f"{self.host_path}:{self.container_path}"
+
+
+class Sysctl(models.Model):
+    """SysCtl definition class"""
+
+    objects = RestrictedQuerySet.as_manager()
+
+    container = models.ForeignKey(
+        Container, on_delete=models.CASCADE, related_name="sysctls"
+    )
+    key = models.CharField(
+        max_length=255,
+        validators=[
+            MinLengthValidator(limit_value=1),
+            MaxLengthValidator(limit_value=255),
+        ],
+    )
+    value = models.CharField(
+        max_length=4095,
+        validators=[
+            MaxLengthValidator(limit_value=4095),
+        ],
+        blank=True,
+    )
+
+    class Meta:
+        """SysCtl Model Meta Class"""
+
+        ordering = ("container", "key")
+        constraints = (
+            models.UniqueConstraint(
+                "key",
+                "container",
+                name="%(app_label)s_%(class)s_unique_key_container'",
+            ),
+        )
+
+    def __str__(self):
+        return f"{self.key}"
